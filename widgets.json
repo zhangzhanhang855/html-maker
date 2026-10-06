@@ -1,9 +1,99 @@
 [
-  {
-    "id": "jr-audio-player-pro",
-    "name": "Hi-Fi Audio Player",
-    "desc": "MP3/FLAC player with automatic Cover, Title & Artist parser",
-    "icon": "🎵",
-    "html": "<div class=\"canvas-widget\" data-widget-id=\"jr-audio-player-pro\" data-widget-name=\"Hi-Fi Audio Player\" style=\"position: absolute; left: 20px; top: 100px; width: 320px; z-index: 20;\"><div class=\"widget-drag-pill\">⠿ Move Player</div><div class=\"widget-content\" style=\"background: rgba(26, 26, 30, 0.78); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 28px; padding: 18px; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55); color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;\"><input type=\"file\" class=\"player-file-input\" accept=\".mp3,audio/mpeg,.flac,audio/flac\" style=\"display: none;\" /><audio class=\"player-audio-core\" preload=\"metadata\" style=\"display: none;\"></audio><div style=\"display: flex; align-items: center; gap: 14px; margin-bottom: 16px;\"><div class=\"player-art-wrap\" style=\"width: 68px; height: 68px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;\"><img class=\"player-cover-img\" style=\"width: 100%; height: 100%; object-fit: cover; display: none;\" /><svg class=\"player-cover-fallback\" width=\"30\" height=\"30\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"rgba(255,255,255,0.5)\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 8v4l3 3\"></path></svg></div><div style=\"flex: 1; min-width: 0;\"><div class=\"player-track-title\" style=\"font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">Tap Art to Select</div><div class=\"player-track-artist\" style=\"font-size: 13px; color: rgba(235, 235, 245, 0.6); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">Supports MP3 & FLAC</div></div></div><div style=\"margin-bottom: 12px;\"><input type=\"range\" class=\"player-progress-bar\" value=\"0\" min=\"0\" max=\"100\" step=\"0.1\" style=\"width: 100%; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.16); outline: none; cursor: pointer;\" /><div style=\"display: flex; justify-content: space-between; font-size: 11px; color: rgba(235, 235, 245, 0.45); margin-top: 6px;\"><span class=\"player-cur-time\">0:00</span><span class=\"player-total-time\">0:00</span></div></div><div style=\"display: flex; align-items: center; justify-content: space-between;\"><button class=\"player-btn-eject\" style=\"background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer;\">📂 Load File</button><button class=\"player-btn-toggle\" style=\"width: 44px; height: 44px; border-radius: 50%; background: #0A84FF; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;\"><svg class=\"player-play-icon\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#ffffff\"><polygon points=\"5 3 19 12 5 21 5 3\"></polygon></svg><svg class=\"player-pause-icon\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#ffffff\" style=\"display: none;\"><rect x=\"6\" y=\"4\" width=\"4\" height=\"16\"></rect><rect x=\"14\" y=\"4\" width=\"4\" height=\"16\"></rect></svg></button></div></div></div>"
-  }
+{
+  "id": "jr-audio-player-pro",
+  "name": "Hi-Fi Audio Player",
+  "desc": "MP3/FLAC player with automatic Cover, Title & Artist parser",
+  "icon": "🎵",
+  "html": "<div 
+  class="canvas-widget" 
+  data-widget-id="jr-audio-player-pro" 
+  data-widget-name="Hi-Fi Audio Player"
+  style="position: absolute; left: 20px; top: 80px; width: 320px; z-index: 20;"
+>
+  <div class="widget-drag-pill">⠿ 移动播放器</div>
+  
+  <div class="widget-content" style="
+    background: rgba(26, 26, 30, 0.85);
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 28px;
+    padding: 18px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  ">
+    <!-- 隐形但不为 none 的原生 input，保障 iOS 能够正常捕获 -->
+    <input 
+      type="file" 
+      class="player-file-input no-drag" 
+      id="audio-input-auto" 
+      accept="audio/*,.mp3,.flac" 
+      style="opacity: 0; position: absolute; z-index: -1; width: 1px; height: 1px; pointer-events: none;" 
+    />
+    <audio class="player-audio-core" preload="metadata" style="display: none;"></audio>
+
+    <!-- 顶部封面与歌曲信息：使用 label 原生绑定 -->
+    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+      <label class="player-art-wrap no-drag" for="audio-input-auto" style="
+        width: 68px; 
+        height: 68px; 
+        border-radius: 18px; 
+        background: rgba(255,255,255,0.06); 
+        border: 1px solid rgba(255,255,255,0.12); 
+        overflow: hidden; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        flex-shrink: 0; 
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      ">
+        <img class="player-cover-img" style="width: 100%; height: 100%; object-fit: cover; display: none;" />
+        <span class="player-cover-fallback" style="font-size:26px; pointer-events: none;">💿</span>
+      </label>
+
+      <div style="flex: 1; min-width: 0;">
+        <div class="player-track-title" style="font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">点击选择音频</div>
+        <div class="player-track-artist" style="font-size: 13px; color: rgba(235, 235, 245, 0.6); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">支持 MP3 / FLAC</div>
+        <div style="display: inline-block; font-size: 10px; font-weight: 700; color: #0A84FF; background: rgba(10, 132, 255, 0.15); border-radius: 999px; padding: 2px 7px; margin-top: 5px;">HI-RES AUDIO</div>
+      </div>
+    </div>
+
+    <!-- 播放进度条 -->
+    <div style="margin-bottom: 12px;" class="no-drag">
+      <input type="range" class="player-progress-bar no-drag" value="0" min="0" max="100" step="0.1" style="width: 100%; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.2); outline: none; cursor: pointer;" />
+      <div style="display: flex; justify-content: space-between; font-size: 11px; color: rgba(235, 235, 245, 0.45); margin-top: 6px;">
+        <span class="player-cur-time">0:00</span>
+        <span class="player-total-time">0:00</span>
+      </div>
+    </div>
+
+    <!-- 底部按钮区 -->
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <!-- 通过原生 label 直接调起系统选择器，跳过任何 JS 间接调用的安全限制 -->
+      <label class="player-btn-eject no-drag" for="audio-input-auto" style="
+        background: rgba(255, 255, 255, 0.1); 
+        border: 1px solid rgba(255, 255, 255, 0.12); 
+        color: #fff; 
+        padding: 9px 16px; 
+        border-radius: 999px; 
+        font-size: 12px; 
+        font-weight: 600; 
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      ">
+        📂 选择音频
+      </label>
+
+      <button type="button" class="player-btn-toggle no-drag" style="width: 44px; height: 44px; border-radius: 50%; background: #0A84FF; border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 4px 15px rgba(10,132,255,0.4);">
+        ▶
+      </button>
+    </div>
+  </div>
+</div>
+"
+}
 ]
