@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>JR Studio — Canvas Composer</title>
+  <style>
+    :root {
+      --primary: #0A84FF;
+      --primary-glow: rgba(10, 132, 255, 0.35);
+      --destructive: #FF453A;
+      --success: #30D158;
+      --bg-base: #000000;
+      --panel-surface: rgba(28, 28, 32, 0.78);
+      --card-surface: rgba(44, 44, 48, 0.65);
+      --card-highlight: rgba(255, 255, 255, 0.08);
+      --text-main: #FFFFFF;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
+      --border-subtle: rgba(255, 255, 255, 0.12);
+      --border-vibrant: rgba(255, 255, 255, 0.22);
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+      outline: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Lighting Background */
+    .app-viewport {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #000000 70%);
+    }
+
+    /* Modern Floating Header Bar */
+    header {
+      padding-top: calc(var(--safe-top) + 12px);
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #0A84FF, #5E5CE6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
+    .brand-mark svg {
+      width: 20px;
+      height: 20px;
+      fill: #ffffff;
+    }
+
+    .brand-name {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .header-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Tactile Buttons with Rounded Radii */
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border-subtle);
+      background: var(--card-surface);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 16px;
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%);
+      border: none;
+      box-shadow: 0 4px 18px var(--primary-glow);
+    }
+
+    .btn-primary:active {
+      background: #0066CC;
+    }
+
+    .btn-danger {
+      background: rgba(255, 69, 58, 0.18);
+      border-color: rgba(255, 69, 58, 0.3);
+      color: #FF453A;
+    }
+
+    /* Artboard / Work Area */
+    .stage {
+      flex: 1;
+      position: relative;
+      margin: 0 16px 14px 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      background: #121214;
+    }
+
+    #artboard-canvas {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background 0.3s ease;
+    }
+
+    /* Dragging Elements & Selection Rings */
+    .canvas-widget {
+      position: absolute;
+      touch-action: none;
+      cursor: grab;
+      border-radius: var(--radius-md);
+      transition: box-shadow 0.2s ease, transform 0.1s ease;
+    }
+
+    .canvas-widget:active {
+      cursor: grabbing;
+    }
+
+    .canvas-widget.selected {
+      box-shadow: 0 0 0 2px var(--primary), 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .widget-drag-pill {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 12px var(--primary-glow);
+      display: none;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .canvas-widget.selected .widget-drag-pill {
+      display: block;
+    }
+
+    /* Floating Vision-Dock Footer */
+    footer {
+      padding-bottom: calc(var(--safe-bottom) + 14px);
+      padding-left: 20px;
+      padding-right: 20px;
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .dock {
+      background: var(--panel-surface);
+      backdrop-filter: blur(35px);
+      -webkit-backdrop-filter: blur(35px);
+      border: 1px solid var(--border-vibrant);
+      border-radius: var(--radius-full);
+      padding: 6px 10px;
+      display: flex;
+      gap: 8px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .dock-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dock-tab svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .dock-tab.active, .dock-tab:active {
+      color: var(--text-main);
+      background: var(--card-highlight);
+    }
+
+    /* Native Bottom Sheet Drawers */
+    .sheet-scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sheet-scrim.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sheet-container {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(var(--safe-bottom) + 12px);
+      background: var(--panel-surface);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid var(--border-vibrant);
+      border-radius: 28px;
+      padding: 22px;
+      z-index: 501;
+      transform: translateY(120%);
+      transition: transform 0.38s cubic-bezier(0.2, 0.9, 0.25, 1);
+      max-height: 78vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    .sheet-container.visible {
+      transform: translateY(0);
+    }
+
+    .sheet-handle-bar {
+      width: 40px;
+      height: 5px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.2);
+      margin: 0 auto 16px auto;
+    }
+
+    .sheet-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .sheet-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .sheet-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-secondary);
+      border-radius: var(--radius-full);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Field Groupings */
+    .field-caption {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .swatches-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+    }
+
+    .swatch {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-subtle);
+      flex-shrink: 0;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+    }
+
+    .swatch:active {
+      transform: scale(0.92);
+    }
+
+    .color-input-wrapper {
+      position: relative;
+      height: 50px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 20px;
+      background: var(--card-surface);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      justify-content: space-between;
+    }
+
+    .color-input-wrapper input[type="color"] {
+      border: none;
+      background: none;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    /* Widget Grid Collection */
+    .widget-catalog {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .widget-item {
+      background: var(--card-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .widget-item:active {
+      transform: scale(0.96);
+      background: var(--card-highlight);
+    }
+
+    .widget-thumb {
+      height: 64px;
+      border-radius: var(--radius-sm);
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .widget-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .widget-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    /* Non-intrusive Floating iOS Pill Banner */
+    .notification-pill {
+      position: fixed;
+      top: calc(var(--safe-top) + 20px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: rgba(30, 30, 34, 0.88);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--border-vibrant);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .notification-pill.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .notification-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-viewport">
+
+    <!-- Top App Navigation -->
+    <header>
+      <div class="brand-cluster">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="brand-name">Composer</div>
+      </div>
+      <div class="header-pills">
+        <button class="btn btn-danger" id="action-delete" style="display: none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Delete
+        </button>
+        <button class="btn btn-primary" id="action-export">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+          Export
+        </button>
+      </div>
+    </header>
+
+    <!-- Artboard Canvas Layer -->
+    <div class="stage">
+      <div id="artboard-canvas"></div>
+    </div>
+
+    <!-- Bottom Action Dock -->
+    <footer>
+      <div class="dock">
+        <button class="dock-tab" id="tab-bg">
+          <svg viewBox="0 0 24 24"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5 0 .12.05.23.13.33.41.47.64 1.06.64 1.67 0 1.38-1.12 2.5-2.5 2.5zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5 0-.16-.08-.28-.14-.35-.41-.46-.63-1.05-.63-1.65 0-1.38 1.12-2.5 2.5-2.5H16c2.21 0 4-1.79 4-4 0-3.86-3.59-7-8-7z"/><circle cx="6.5" cy="11.5" r="1.5"/><circle cx="9.5" cy="7.5" r="1.5"/><circle cx="14.5" cy="7.5" r="1.5"/><circle cx="17.5" cy="11.5" r="1.5"/></svg>
+          Background
+        </button>
+        <button class="dock-tab" id="tab-widgets">
+          <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h6v-6zM19 3h-6v6h6V3zM9 13H3v6h6v-6zm0-10H3v6h6V3z"/></svg>
+          Components
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Background Drawer Modal -->
+  <div class="sheet-scrim" id="scrim-bg"></div>
+  <div class="sheet-container" id="drawer-bg">
+    <div class="sheet-handle-bar"></div>
+    <div class="sheet-top">
+      <div class="sheet-title">Canvas Styling</div>
+      <button class="sheet-close" data-dismiss="drawer-bg">Done</button>
+    </div>
+
+    <span class="field-caption">Solid / Curated Gradients</span>
+    <div class="swatches-scroll">
+      <div class="swatch" style="background: #000000;" data-bg="#000000"></div>
+      <div class="swatch" style="background: #18181b;" data-bg="#18181b"></div>
+      <div class="swatch" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);" data-bg="linear-gradient(135deg, #1e3a8a, #0f172a)"></div>
+      <div class="swatch" style="background: linear-gradient(135deg, #831843, #18181b);" data-bg="linear-gradient(135deg, #831843, #18181b)"></div>
+      <div class="swatch" style="background: linear-gradient(135deg, #134e4a, #042f2e);" data-bg="linear-gradient(135deg, #134e4a, #042f2e)"></div>
+      <div class="swatch" style="background: linear-gradient(135deg, #312e81, #581c87);" data-bg="linear-gradient(135deg, #312e81, #581c87)"></div>
+    </div>
+
+    <span class="field-caption">Fine Tune Tone</span>
+    <div class="color-input-wrapper">
+      <span style="font-size: 14px; font-weight: 500;">Hex Color Palette</span>
+      <input type="color" id="native-bg-color" value="#121214" />
+    </div>
+
+    <span class="field-caption">Import Custom Wallpaper</span>
+    <input type="file" id="local-img-input" accept="image/*" style="display: none;" />
+    <button class="btn" style="width: 100%; border-radius: var(--radius-md); padding: 13px;" onclick="document.getElementById('local-img-input').click()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      Select Local Photo
+    </button>
+  </div>
+
+  <!-- Components Drawer Modal -->
+  <div class="sheet-scrim" id="scrim-widgets"></div>
+  <div class="sheet-container" id="drawer-widgets">
+    <div class="sheet-handle-bar"></div>
+    <div class="sheet-top">
+      <div class="sheet-title">Repository Components</div>
+      <button class="sheet-close" data-dismiss="drawer-widgets">Close</button>
+    </div>
+    <div class="widget-catalog" id="catalog-list">
+      <!-- Syncs from Github / Loads presets -->
+    </div>
+  </div>
+
+  <!-- Custom In-App Notification Capsule -->
+  <div class="notification-pill" id="notification-capsule">
+    <div class="notification-dot"></div>
+    <span id="notification-msg"></span>
+  </div>
+
+  <script>
+    (function () {
+      /**
+       * Core Reactive State
+       */
+      const state = {
+        background: '#121214',
+        isImage: false,
+        activeNode: null,
+        catalog: []
+      };
+
+      const canvas = document.getElementById('artboard-canvas');
+      const deleteBtn = document.getElementById('action-delete');
+      const notification = document.getElementById('notification-capsule');
+      const notificationMsg = document.getElementById('notification-msg');
+
+      /* In-App Toast Helper (Eliminates window.alert) */
+      function notify(msg) {
+        notificationMsg.textContent = msg;
+        notification.classList.add('active');
+        clearTimeout(notification._timer);
+        notification._timer = setTimeout(() => {
+          notification.classList.remove('active');
+        }, 2400);
+      }
+
+      /* ----------------------------------------------------
+       * Modal Drawers
+       * ---------------------------------------------------- */
+      function openDrawer(drawerId, scrimId) {
+        document.getElementById(drawerId).classList.add('visible');
+        document.getElementById(scrimId).classList.add('visible');
+      }
+
+      function closeDrawer(drawerId, scrimId) {
+        document.getElementById(drawerId).classList.remove('visible');
+        document.getElementById(scrimId).classList.remove('visible');
+      }
+
+      document.querySelectorAll('[data-dismiss]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-dismiss');
+          closeDrawer(target, target.replace('drawer-', 'scrim-'));
+        });
+      });
+
+      document.getElementById('scrim-bg').addEventListener('click', () => closeDrawer('drawer-bg', 'scrim-bg'));
+      document.getElementById('scrim-widgets').addEventListener('click', () => closeDrawer('drawer-widgets', 'scrim-widgets'));
+      document.getElementById('tab-bg').addEventListener('click', () => openDrawer('drawer-bg', 'scrim-bg'));
+      document.getElementById('tab-widgets').addEventListener('click', () => openDrawer('drawer-widgets', 'scrim-widgets'));
+
+      /* ----------------------------------------------------
+       * Background Styling Engine
+       * ---------------------------------------------------- */
+      function applyBackground() {
+        if (state.isImage) {
+          canvas.style.backgroundImage = `url(${state.background})`;
+          canvas.style.backgroundColor = 'transparent';
+        } else {
+          canvas.style.backgroundImage = 'none';
+          if (state.background.includes('gradient')) {
+            canvas.style.background = state.background;
+          } else {
+            canvas.style.backgroundColor = state.background;
+          }
+        }
+      }
+
+      document.querySelectorAll('.swatch').forEach(sw => {
+        sw.addEventListener('click', () => {
+          state.background = sw.getAttribute('data-bg');
+          state.isImage = false;
+          applyBackground();
+          notify('Background style applied');
+        });
+      });
+
+      document.getElementById('native-bg-color').addEventListener('input', (e) => {
+        state.background = e.target.value;
+        state.isImage = false;
+        applyBackground();
+      });
+
+      document.getElementById('local-img-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          state.background = evt.target.result;
+          state.isImage = true;
+          applyBackground();
+          closeDrawer('drawer-bg', 'scrim-bg');
+          notify('Local wallpaper updated');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      /* ----------------------------------------------------
+       * GitHub Sync & Widget Registry Contract
+       * ---------------------------------------------------- */
+      const GITHUB_ENDPOINT = 'https://raw.githubusercontent.com/zhangzhanhang855/html-maker/main/widgets.json';
+
+      const NATIVE_BUILTIN_WIDGETS = [
+        {
+          id: 'glass-player',
+          name: 'Frosted Audio Node',
+          desc: 'VisionOS style dynamic playback module',
+          icon: '🎧',
+          html: `<div class="canvas-widget" data-widget-id="glass-player" style="position: absolute; left: 24px; top: 120px; width: 280px; background: rgba(30, 30, 36, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 24px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: 0 16px 40px rgba(0,0,0,0.5);"><div class="widget-drag-pill">⠿ Move</div><div class="widget-content" style="display:flex; align-items:center; gap:14px;"><div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #FF2D55, #FB7185); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(255,45,85,0.4);"><svg width="22" height="22" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div style="flex:1;"><div style="font-size:15px; font-weight:700; color:#fff; letter-spacing:-0.2px;">Infinite Beats</div><div style="font-size:12px; color:rgba(235,235,245,0.6); margin-top:2px;">JR Studio Acoustic</div></div></div></div>`
+        },
+        {
+          id: 'status-pill',
+          name: 'Live Indicator Pill',
+          desc: 'Compact rounded status chip',
+          icon: '🟢',
+          html: `<div class="canvas-widget" data-widget-id="status-pill" style="position: absolute; left: 24px; top: 50px; background: rgba(10, 132, 255, 0.2); border: 1px solid rgba(10, 132, 255, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 9999px; padding: 6px 14px; box-shadow: 0 4px 15px rgba(10,132,255,0.25);"><div class="widget-drag-pill">⠿ Move</div><div class="widget-content" style="display: flex; align-items: center; gap: 8px;"><div style="width:8px; height:8px; border-radius:50%; background:#30D158; box-shadow:0 0 8px #30D158;"></div><span style="font-size:12px; font-weight:700; color:#fff; letter-spacing: 0.2px;">ONLINE MODE</span></div></div>`
+        },
+        {
+          id: 'metric-card',
+          name: 'Rounded KPI Metric',
+          desc: 'Data highlight container',
+          icon: '📈',
+          html: `<div class="canvas-widget" data-widget-id="metric-card" style="position: absolute; left: 24px; top: 230px; width: 170px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 20px; padding: 16px;"><div class="widget-drag-pill">⠿ Move</div><div class="widget-content"><div style="font-size:12px; font-weight:600; color:rgba(235,235,245,0.5);">PERFORMANCE</div><div style="font-size:26px; font-weight:800; color:#fff; margin:6px 0 2px 0;">99.8%</div><div style="font-size:11px; font-weight:600; color:#30D158;">+2.4% vs baseline</div></div></div>`
+        }
+      ];
+
+      async function syncWidgetRepository() {
+        try {
+          const res = await fetch(GITHUB_ENDPOINT, { cache: 'no-cache' });
+          if (!res.ok) throw new Error();
+          state.catalog = await res.json();
+          notify('Synced from GitHub');
+        } catch (_) {
+          state.catalog = NATIVE_BUILTIN_WIDGETS;
+        }
+        renderWidgetCatalog();
+      }
+
+      function renderWidgetCatalog() {
+        const list = document.getElementById('catalog-list');
+        list.innerHTML = '';
+        state.catalog.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'widget-item';
+          card.innerHTML = `
+            <div class="widget-thumb">${item.icon || '🧩'}</div>
+            <div>
+              <div class="widget-label">${item.name}</div>
+              <div class="widget-desc">${item.desc || ''}</div>
+            </div>
+          `;
+          card.addEventListener('click', () => {
+            placeWidgetOnCanvas(item.html);
+            closeDrawer('drawer-widgets', 'scrim-widgets');
+            notify(`Mounted: ${item.name}`);
+          });
+          list.appendChild(card);
+        });
+      }
+
+      /* ----------------------------------------------------
+       * Canvas Manipulator & Gesture Tracker
+       * ---------------------------------------------------- */
+      function placeWidgetOnCanvas(htmlPayload) {
+        const dummy = document.createElement('div');
+        dummy.innerHTML = htmlPayload.trim();
+        const widgetNode = dummy.firstElementChild;
+        canvas.appendChild(widgetNode);
+        registerInteractions(widgetNode);
+        highlightNode(widgetNode);
+      }
+
+      function highlightNode(el) {
+        if (state.activeNode) {
+          state.activeNode.classList.remove('selected');
+        }
+        state.activeNode = el;
+        if (el) {
+          el.classList.add('selected');
+          deleteBtn.style.display = 'inline-flex';
+        } else {
+          deleteBtn.style.display = 'none';
+        }
+      }
+
+      deleteBtn.addEventListener('click', () => {
+        if (state.activeNode) {
+          state.activeNode.remove();
+          highlightNode(null);
+          notify('Element removed');
+        }
+      });
+
+      canvas.addEventListener('pointerdown', (e) => {
+        if (e.target === canvas) highlightNode(null);
+      });
+
+      function registerInteractions(element) {
+        let isMoving = false;
+        let pointerStartX = 0;
+        let pointerStartY = 0;
+        let originLeft = 0;
+        let originTop = 0;
+
+        element.addEventListener('pointerdown', (e) => {
+          e.stopPropagation();
+          highlightNode(element);
+          isMoving = true;
+          element.setPointerCapture(e.pointerId);
+
+          pointerStartX = e.clientX;
+          pointerStartY = e.clientY;
+          originLeft = element.offsetLeft;
+          originTop = element.offsetTop;
+        });
+
+        element.addEventListener('pointermove', (e) => {
+          if (!isMoving) return;
+          const deltaX = e.clientX - pointerStartX;
+          const deltaY = e.clientY - pointerStartY;
+          element.style.left = `${originLeft + deltaX}px`;
+          element.style.top = `${originTop + deltaY}px`;
+        });
+
+        const release = (e) => {
+          if (isMoving) {
+            isMoving = false;
+            try { element.releasePointerCapture(e.pointerId); } catch (_) {}
+          }
+        };
+
+        element.addEventListener('pointerup', release);
+        element.addEventListener('pointercancel', release);
+      }
+
+      /* ----------------------------------------------------
+       * Standalone Bundling & Native Share Layer
+       * ---------------------------------------------------- */
+      document.getElementById('action-export').addEventListener('click', async () => {
+        highlightNode(null);
+
+        const cleanCanvas = canvas.cloneNode(true);
+        cleanCanvas.querySelectorAll('.widget-drag-pill').forEach(pill => pill.remove());
+        cleanCanvas.querySelectorAll('.canvas-widget').forEach(w => {
+          w.classList.remove('selected');
+          w.removeAttribute('data-widget-id');
+          w.style.cursor = 'default';
+        });
+
+        const backgroundStyle = state.isImage
+          ? `background-image: url('${state.background}'); background-size: cover; background-position: center;`
+          : (state.background.includes('gradient')
+            ? `background: ${state.background};`
+            : `background-color: ${state.background};`);
+
+        const standaloneDocument = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Crafted Experience</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+    #viewport-root {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      ${backgroundStyle}
+      overflow: hidden;
+    }
+    .canvas-widget { position: absolute; }
+  </style>
+</head>
+<body>
+  <div id="viewport-root">
+    ${cleanCanvas.innerHTML}
+  </div>
+</body>
+</html>`;
+
+        const filename = `crafted-page-${Date.now()}.html`;
+        const blob = new Blob([standaloneDocument], { type: 'text/html;charset=utf-8' });
+
+        // iOS WKWebView Native Share Sheet (Zero Web Dialogs)
+        if (navigator.share) {
+          const htmlFile = new File([blob], filename, { type: 'text/html' });
+          if (navigator.canShare && navigator.canShare({ files: [htmlFile] })) {
+            try {
+              await navigator.share({
+                title: 'Export HTML',
+                files: [htmlFile]
+              });
+              notify('Share Sheet opened');
+              return;
+            } catch (err) {
+              if (err.name !== 'AbortError') notify('Share dismissed');
+            }
+          }
+        }
+
+        // Direct stream download fallback
+        const downloadUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = downloadUrl;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(downloadUrl);
+        notify('Export file ready');
+      });
+
+      // Bootstrap
+      applyBackground();
+      syncWidgetRepository();
+    })();
+  </script>
+</body>
+</html>
