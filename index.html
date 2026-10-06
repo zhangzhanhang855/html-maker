@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>JR Studio — Canvas Composer</title>
+  <title>JR Studio — HTML Maker</title>
   <style>
     :root {
       --primary: #0A84FF;
@@ -11,7 +11,7 @@
       --destructive: #FF453A;
       --success: #30D158;
       --bg-base: #000000;
-      --panel-surface: rgba(28, 28, 32, 0.78);
+      --panel-surface: rgba(28, 28, 32, 0.82);
       --card-surface: rgba(44, 44, 48, 0.65);
       --card-highlight: rgba(255, 255, 255, 0.08);
       --text-main: #FFFFFF;
@@ -38,7 +38,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", sans-serif;
       background-color: var(--bg-base);
       color: var(--text-main);
       height: 100vh;
@@ -48,7 +48,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient Lighting Background */
     .app-viewport {
       position: relative;
       display: flex;
@@ -58,12 +57,12 @@
       background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #000000 70%);
     }
 
-    /* Modern Floating Header Bar */
+    /* 顶部导航栏 */
     header {
-      padding-top: calc(var(--safe-top) + 12px);
+      padding-top: calc(var(--safe-top) + 10px);
       padding-left: 20px;
       padding-right: 20px;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -77,8 +76,8 @@
     }
 
     .brand-mark {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: var(--radius-sm);
       background: linear-gradient(135deg, #0A84FF, #5E5CE6);
       display: flex;
@@ -88,8 +87,8 @@
     }
 
     .brand-mark svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       fill: #ffffff;
     }
 
@@ -104,7 +103,6 @@
       gap: 8px;
     }
 
-    /* Tactile Buttons with Rounded Radii */
     .btn {
       appearance: none;
       border: 1px solid var(--border-subtle);
@@ -134,17 +132,13 @@
       box-shadow: 0 4px 18px var(--primary-glow);
     }
 
-    .btn-primary:active {
-      background: #0066CC;
-    }
-
     .btn-danger {
       background: rgba(255, 69, 58, 0.18);
       border-color: rgba(255, 69, 58, 0.3);
       color: #FF453A;
     }
 
-    /* Artboard / Work Area */
+    /* 画布区域 */
     .stage {
       flex: 1;
       position: relative;
@@ -164,16 +158,15 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      transition: background 0.3s ease;
     }
 
-    /* Dragging Elements & Selection Rings */
+    /* 组件外框及拖动指示 */
     .canvas-widget {
       position: absolute;
       touch-action: none;
       cursor: grab;
       border-radius: var(--radius-md);
-      transition: box-shadow 0.2s ease, transform 0.1s ease;
+      transition: box-shadow 0.2s ease;
     }
 
     .canvas-widget:active {
@@ -193,7 +186,7 @@
       color: #fff;
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 10px;
+      padding: 3px 12px;
       border-radius: var(--radius-full);
       box-shadow: 0 4px 12px var(--primary-glow);
       display: none;
@@ -205,7 +198,7 @@
       display: block;
     }
 
-    /* Floating Vision-Dock Footer */
+    /* 底部功能 Dock 栏 */
     footer {
       padding-bottom: calc(var(--safe-bottom) + 14px);
       padding-left: 20px;
@@ -221,9 +214,9 @@
       -webkit-backdrop-filter: blur(35px);
       border: 1px solid var(--border-vibrant);
       border-radius: var(--radius-full);
-      padding: 6px 10px;
+      padding: 6px 12px;
       display: flex;
-      gap: 8px;
+      gap: 6px;
       box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
     }
 
@@ -231,20 +224,20 @@
       background: transparent;
       border: none;
       color: var(--text-secondary);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: var(--radius-full);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .dock-tab svg {
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       fill: currentColor;
     }
 
@@ -253,11 +246,11 @@
       background: var(--card-highlight);
     }
 
-    /* Native Bottom Sheet Drawers */
+    /* 模态抽屉底板 */
     .sheet-scrim {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       z-index: 500;
@@ -273,8 +266,8 @@
 
     .sheet-container {
       position: fixed;
-      left: 12px;
-      right: 12px;
+      left: 14px;
+      right: 14px;
       bottom: calc(var(--safe-bottom) + 12px);
       background: var(--panel-surface);
       backdrop-filter: blur(40px);
@@ -285,9 +278,9 @@
       z-index: 501;
       transform: translateY(120%);
       transition: transform 0.38s cubic-bezier(0.2, 0.9, 0.25, 1);
-      max-height: 78vh;
+      max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
     }
 
     .sheet-container.visible {
@@ -295,7 +288,7 @@
     }
 
     .sheet-handle-bar {
-      width: 40px;
+      width: 42px;
       height: 5px;
       border-radius: var(--radius-full);
       background: rgba(255, 255, 255, 0.2);
@@ -320,26 +313,46 @@
       border: none;
       color: var(--text-secondary);
       border-radius: var(--radius-full);
-      padding: 6px 12px;
+      padding: 6px 14px;
       font-size: 13px;
       font-weight: 600;
     }
 
-    /* Field Groupings */
     .field-caption {
       font-size: 13px;
       font-weight: 600;
       color: var(--text-secondary);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       display: block;
     }
 
+    /* 输入框组件 (替代 prompt) */
+    .input-pill-field {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      margin-bottom: 14px;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .input-pill-field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+
+    /* 背景预设色块 */
     .swatches-scroll {
       display: flex;
       gap: 12px;
       overflow-x: auto;
       padding-bottom: 8px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .swatch {
@@ -349,7 +362,6 @@
       border: 2px solid var(--border-subtle);
       flex-shrink: 0;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       transition: transform 0.2s ease;
     }
 
@@ -358,12 +370,10 @@
     }
 
     .color-input-wrapper {
-      position: relative;
-      height: 50px;
+      height: 48px;
       border-radius: var(--radius-md);
-      overflow: hidden;
       border: 1px solid var(--border-subtle);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       background: var(--card-surface);
       display: flex;
       align-items: center;
@@ -374,17 +384,17 @@
     .color-input-wrapper input[type="color"] {
       border: none;
       background: none;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: var(--radius-sm);
       cursor: pointer;
     }
 
-    /* Widget Grid Collection */
+    /* 组件卡片网格 */
     .widget-catalog {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
     }
 
     .widget-item {
@@ -394,9 +404,8 @@
       padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .widget-item:active {
@@ -405,7 +414,7 @@
     }
 
     .widget-thumb {
-      height: 64px;
+      height: 56px;
       border-radius: var(--radius-sm);
       background: rgba(0, 0, 0, 0.3);
       display: flex;
@@ -426,13 +435,13 @@
       line-height: 1.3;
     }
 
-    /* Non-intrusive Floating iOS Pill Banner */
+    /* 系统级浮动胶囊提示 (完全替代 Alert) */
     .notification-pill {
       position: fixed;
-      top: calc(var(--safe-top) + 20px);
+      top: calc(var(--safe-top) + 16px);
       left: 50%;
-      transform: translateX(-50%) translateY(-30px);
-      background: rgba(30, 30, 34, 0.88);
+      transform: translateX(-50%) translateY(-35px);
+      background: rgba(30, 30, 34, 0.92);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
       border: 1px solid var(--border-vibrant);
@@ -441,11 +450,11 @@
       font-weight: 600;
       padding: 8px 18px;
       border-radius: var(--radius-full);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
       opacity: 0;
       pointer-events: none;
       transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      z-index: 1000;
+      z-index: 2000;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -468,94 +477,120 @@
 
   <div class="app-viewport">
 
-    <!-- Top App Navigation -->
+    <!-- 顶部操作条 -->
     <header>
       <div class="brand-cluster">
         <div class="brand-mark">
           <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
-        <div class="brand-name">Composer</div>
+        <div class="brand-name">网页排版器</div>
       </div>
       <div class="header-pills">
         <button class="btn btn-danger" id="action-delete" style="display: none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          Delete
+          删除
         </button>
         <button class="btn btn-primary" id="action-export">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
-          Export
+          导出
         </button>
       </div>
     </header>
 
-    <!-- Artboard Canvas Layer -->
+    <!-- 主画布 -->
     <div class="stage">
       <div id="artboard-canvas"></div>
     </div>
 
-    <!-- Bottom Action Dock -->
+    <!-- 底部 Dock 栏（新增 GitHub 同步选项） -->
     <footer>
       <div class="dock">
         <button class="dock-tab" id="tab-bg">
-          <svg viewBox="0 0 24 24"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5 0 .12.05.23.13.33.41.47.64 1.06.64 1.67 0 1.38-1.12 2.5-2.5 2.5zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5 0-.16-.08-.28-.14-.35-.41-.46-.63-1.05-.63-1.65 0-1.38 1.12-2.5 2.5-2.5H16c2.21 0 4-1.79 4-4 0-3.86-3.59-7-8-7z"/><circle cx="6.5" cy="11.5" r="1.5"/><circle cx="9.5" cy="7.5" r="1.5"/><circle cx="14.5" cy="7.5" r="1.5"/><circle cx="17.5" cy="11.5" r="1.5"/></svg>
-          Background
+          <svg viewBox="0 0 24 24"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5 0 .12.05.23.13.33.41.47.64 1.06.64 1.67 0 1.38-1.12 2.5-2.5 2.5zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5 0-.16-.08-.28-.14-.35-.41-.46-.63-1.05-.63-1.65 0-1.38 1.12-2.5 2.5-2.5H16c2.21 0 4-1.79 4-4 0-3.86-3.59-7-8-7z"/></svg>
+          背景设置
         </button>
         <button class="dock-tab" id="tab-widgets">
           <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h6v-6zM19 3h-6v6h6V3zM9 13H3v6h6v-6zm0-10H3v6h6V3z"/></svg>
-          Components
+          组件库
+        </button>
+        <button class="dock-tab" id="tab-sync">
+          <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+          同步 GitHub
         </button>
       </div>
     </footer>
 
   </div>
 
-  <!-- Background Drawer Modal -->
+  <!-- 背景设置面板 -->
   <div class="sheet-scrim" id="scrim-bg"></div>
   <div class="sheet-container" id="drawer-bg">
     <div class="sheet-handle-bar"></div>
     <div class="sheet-top">
-      <div class="sheet-title">Canvas Styling</div>
-      <button class="sheet-close" data-dismiss="drawer-bg">Done</button>
+      <div class="sheet-title">画布背景调节</div>
+      <button class="sheet-close" data-dismiss="drawer-bg">完成</button>
     </div>
 
-    <span class="field-caption">Solid / Curated Gradients</span>
+    <span class="field-caption">经典纯色与微光渐变</span>
     <div class="swatches-scroll">
       <div class="swatch" style="background: #000000;" data-bg="#000000"></div>
       <div class="swatch" style="background: #18181b;" data-bg="#18181b"></div>
       <div class="swatch" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);" data-bg="linear-gradient(135deg, #1e3a8a, #0f172a)"></div>
       <div class="swatch" style="background: linear-gradient(135deg, #831843, #18181b);" data-bg="linear-gradient(135deg, #831843, #18181b)"></div>
       <div class="swatch" style="background: linear-gradient(135deg, #134e4a, #042f2e);" data-bg="linear-gradient(135deg, #134e4a, #042f2e)"></div>
-      <div class="swatch" style="background: linear-gradient(135deg, #312e81, #581c87);" data-bg="linear-gradient(135deg, #312e81, #581c87)"></div>
     </div>
 
-    <span class="field-caption">Fine Tune Tone</span>
+    <span class="field-caption">精确色彩选择</span>
     <div class="color-input-wrapper">
-      <span style="font-size: 14px; font-weight: 500;">Hex Color Palette</span>
+      <span style="font-size: 14px; font-weight: 500;">自由调色板</span>
       <input type="color" id="native-bg-color" value="#121214" />
     </div>
 
-    <span class="field-caption">Import Custom Wallpaper</span>
+    <span class="field-caption">导入本地相册壁纸</span>
     <input type="file" id="local-img-input" accept="image/*" style="display: none;" />
     <button class="btn" style="width: 100%; border-radius: var(--radius-md); padding: 13px;" onclick="document.getElementById('local-img-input').click()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-      Select Local Photo
+      选择本地图片
     </button>
   </div>
 
-  <!-- Components Drawer Modal -->
+  <!-- 组件库面板 -->
   <div class="sheet-scrim" id="scrim-widgets"></div>
   <div class="sheet-container" id="drawer-widgets">
     <div class="sheet-handle-bar"></div>
     <div class="sheet-top">
-      <div class="sheet-title">Repository Components</div>
-      <button class="sheet-close" data-dismiss="drawer-widgets">Close</button>
+      <div class="sheet-title">可用组件</div>
+      <button class="sheet-close" data-dismiss="drawer-widgets">关闭</button>
     </div>
-    <div class="widget-catalog" id="catalog-list">
-      <!-- Syncs from Github / Loads presets -->
-    </div>
+    <div class="widget-catalog" id="catalog-list"></div>
   </div>
 
-  <!-- Custom In-App Notification Capsule -->
+  <!-- 新增：GitHub 专属同步管理面板（免 Alert / Prompt） -->
+  <div class="sheet-scrim" id="scrim-sync"></div>
+  <div class="sheet-container" id="drawer-sync">
+    <div class="sheet-handle-bar"></div>
+    <div class="sheet-top">
+      <div class="sheet-title">GitHub 仓库同步</div>
+      <button class="sheet-close" data-dismiss="drawer-sync">关闭</button>
+    </div>
+
+    <span class="field-caption">仓库路径 (用户名/仓库名)</span>
+    <input type="text" class="input-pill-field" id="sync-repo-name" value="zhangzhanhang855/html-maker" placeholder="例: zhangzhanhang855/html-maker" />
+
+    <span class="field-caption">分支 (Branch)</span>
+    <input type="text" class="input-pill-field" id="sync-branch-name" value="main" placeholder="main" />
+
+    <div style="background: rgba(255,255,255,0.04); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 18px; border: 1px solid var(--border-subtle);">
+      <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;" id="sync-status-text">
+        准备就绪：点击下方按钮将同时从 jsDelivr CDN 加速节点和 GitHub 拉取 widgets.json
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-start-sync" style="width: 100%; border-radius: var(--radius-md); padding: 14px; font-size: 15px;">
+      立即同步最新小组件
+    </button>
+  </div>
+
+  <!-- 提示胶囊 -->
   <div class="notification-pill" id="notification-capsule">
     <div class="notification-dot"></div>
     <span id="notification-msg"></span>
@@ -563,9 +598,6 @@
 
   <script>
     (function () {
-      /**
-       * Core Reactive State
-       */
       const state = {
         background: '#121214',
         isImage: false,
@@ -577,20 +609,18 @@
       const deleteBtn = document.getElementById('action-delete');
       const notification = document.getElementById('notification-capsule');
       const notificationMsg = document.getElementById('notification-msg');
+      const syncStatusText = document.getElementById('sync-status-text');
 
-      /* In-App Toast Helper (Eliminates window.alert) */
       function notify(msg) {
         notificationMsg.textContent = msg;
         notification.classList.add('active');
         clearTimeout(notification._timer);
         notification._timer = setTimeout(() => {
           notification.classList.remove('active');
-        }, 2400);
+        }, 2200);
       }
 
-      /* ----------------------------------------------------
-       * Modal Drawers
-       * ---------------------------------------------------- */
+      /* 抽屉逻辑 */
       function openDrawer(drawerId, scrimId) {
         document.getElementById(drawerId).classList.add('visible');
         document.getElementById(scrimId).classList.add('visible');
@@ -610,12 +640,13 @@
 
       document.getElementById('scrim-bg').addEventListener('click', () => closeDrawer('drawer-bg', 'scrim-bg'));
       document.getElementById('scrim-widgets').addEventListener('click', () => closeDrawer('drawer-widgets', 'scrim-widgets'));
+      document.getElementById('scrim-sync').addEventListener('click', () => closeDrawer('drawer-sync', 'scrim-sync'));
+
       document.getElementById('tab-bg').addEventListener('click', () => openDrawer('drawer-bg', 'scrim-bg'));
       document.getElementById('tab-widgets').addEventListener('click', () => openDrawer('drawer-widgets', 'scrim-widgets'));
+      document.getElementById('tab-sync').addEventListener('click', () => openDrawer('drawer-sync', 'scrim-sync'));
 
-      /* ----------------------------------------------------
-       * Background Styling Engine
-       * ---------------------------------------------------- */
+      /* 背景控制 */
       function applyBackground() {
         if (state.isImage) {
           canvas.style.backgroundImage = `url(${state.background})`;
@@ -635,7 +666,7 @@
           state.background = sw.getAttribute('data-bg');
           state.isImage = false;
           applyBackground();
-          notify('Background style applied');
+          notify('背景样式已更新');
         });
       });
 
@@ -654,53 +685,81 @@
           state.isImage = true;
           applyBackground();
           closeDrawer('drawer-bg', 'scrim-bg');
-          notify('Local wallpaper updated');
+          notify('本地壁纸导入成功');
         };
         reader.readAsDataURL(file);
       });
 
-      /* ----------------------------------------------------
-       * GitHub Sync & Widget Registry Contract
-       * ---------------------------------------------------- */
-      const GITHUB_ENDPOINT = 'https://raw.githubusercontent.com/zhangzhanhang855/html-maker/main/widgets.json';
-
-      const NATIVE_BUILTIN_WIDGETS = [
+      /* 内置默认小组件（包含高保真 MP3/FLAC 播放器） */
+      const BUILTIN_WIDGETS = [
         {
-          id: 'glass-player',
-          name: 'Frosted Audio Node',
-          desc: 'VisionOS style dynamic playback module',
-          icon: '🎧',
-          html: `<div class="canvas-widget" data-widget-id="glass-player" style="position: absolute; left: 24px; top: 120px; width: 280px; background: rgba(30, 30, 36, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 24px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: 0 16px 40px rgba(0,0,0,0.5);"><div class="widget-drag-pill">⠿ Move</div><div class="widget-content" style="display:flex; align-items:center; gap:14px;"><div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #FF2D55, #FB7185); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(255,45,85,0.4);"><svg width="22" height="22" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div style="flex:1;"><div style="font-size:15px; font-weight:700; color:#fff; letter-spacing:-0.2px;">Infinite Beats</div><div style="font-size:12px; color:rgba(235,235,245,0.6); margin-top:2px;">JR Studio Acoustic</div></div></div></div>`
+          id: 'jr-audio-player-pro',
+          name: '高保真音乐播放器',
+          desc: '支持 MP3/FLAC，自动解析封面、歌名和作者',
+          icon: '🎵',
+          html: `<div class="canvas-widget" data-widget-id="jr-audio-player-pro" data-widget-name="Hi-Fi Audio Player" style="position: absolute; left: 20px; top: 80px; width: 320px; z-index: 20;"><div class="widget-drag-pill">⠿ 移动播放器</div><div class="widget-content" style="background: rgba(26, 26, 30, 0.85); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 28px; padding: 18px; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55); color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, sans-serif;"><input type="file" class="player-file-input" accept=".mp3,audio/mpeg,.flac,audio/flac" style="display: none;" /><audio class="player-audio-core" preload="metadata" style="display: none;"></audio><div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;"><div class="player-art-wrap" style="width: 68px; height: 68px; border-radius: 18px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;"><img class="player-cover-img" style="width: 100%; height: 100%; object-fit: cover; display: none;" /><span class="player-cover-fallback" style="font-size:26px;">💿</span></div><div style="flex: 1; min-width: 0;"><div class="player-track-title" style="font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">点击封面载入音频</div><div class="player-track-artist" style="font-size: 13px; color: rgba(235, 235, 245, 0.6); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">支持 MP3 / FLAC</div></div></div><div style="margin-bottom: 12px;"><input type="range" class="player-progress-bar" value="0" min="0" max="100" step="0.1" style="width: 100%; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.2); outline: none; cursor: pointer;" /><div style="display: flex; justify-content: space-between; font-size: 11px; color: rgba(235, 235, 245, 0.45); margin-top: 6px;"><span class="player-cur-time">0:00</span><span class="player-total-time">0:00</span></div></div><div style="display: flex; align-items: center; justify-content: space-between;"><button class="player-btn-eject" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.12); color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer;">📂 选择文件</button><button class="player-btn-toggle" style="width: 44px; height: 44px; border-radius: 50%; background: #0A84FF; border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px;">▶</button></div></div></div>`
         },
         {
-          id: 'status-pill',
-          name: 'Live Indicator Pill',
-          desc: 'Compact rounded status chip',
+          id: 'status-badge',
+          name: '实时在线胶囊',
+          desc: '圆角半透明状态条',
           icon: '🟢',
-          html: `<div class="canvas-widget" data-widget-id="status-pill" style="position: absolute; left: 24px; top: 50px; background: rgba(10, 132, 255, 0.2); border: 1px solid rgba(10, 132, 255, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 9999px; padding: 6px 14px; box-shadow: 0 4px 15px rgba(10,132,255,0.25);"><div class="widget-drag-pill">⠿ Move</div><div class="widget-content" style="display: flex; align-items: center; gap: 8px;"><div style="width:8px; height:8px; border-radius:50%; background:#30D158; box-shadow:0 0 8px #30D158;"></div><span style="font-size:12px; font-weight:700; color:#fff; letter-spacing: 0.2px;">ONLINE MODE</span></div></div>`
-        },
-        {
-          id: 'metric-card',
-          name: 'Rounded KPI Metric',
-          desc: 'Data highlight container',
-          icon: '📈',
-          html: `<div class="canvas-widget" data-widget-id="metric-card" style="position: absolute; left: 24px; top: 230px; width: 170px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 20px; padding: 16px;"><div class="widget-drag-pill">⠿ Move</div><div class="widget-content"><div style="font-size:12px; font-weight:600; color:rgba(235,235,245,0.5);">PERFORMANCE</div><div style="font-size:26px; font-weight:800; color:#fff; margin:6px 0 2px 0;">99.8%</div><div style="font-size:11px; font-weight:600; color:#30D158;">+2.4% vs baseline</div></div></div>`
+          html: `<div class="canvas-widget" data-widget-id="status-badge" style="position: absolute; left: 24px; top: 30px; background: rgba(10, 132, 255, 0.25); border: 1px solid rgba(10, 132, 255, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 9999px; padding: 6px 14px;"><div class="widget-drag-pill">⠿ 移动</div><div class="widget-content" style="display: flex; align-items: center; gap: 8px;"><div style="width:8px; height:8px; border-radius:50%; background:#30D158; box-shadow:0 0 8px #30D158;"></div><span style="font-size:12px; font-weight:700; color:#fff;">ONLINE RUNNING</span></div></div>`
         }
       ];
 
-      async function syncWidgetRepository() {
-        try {
-          const res = await fetch(GITHUB_ENDPOINT, { cache: 'no-cache' });
-          if (!res.ok) throw new Error();
-          state.catalog = await res.json();
-          notify('Synced from GitHub');
-        } catch (_) {
-          state.catalog = NATIVE_BUILTIN_WIDGETS;
+      state.catalog = BUILTIN_WIDGETS;
+
+      /* 同步 GitHub 核心引擎（带国内 CDN 加速与错误兜底） */
+      async function executeSync() {
+        const repo = document.getElementById('sync-repo-name').value.trim() || 'zhangzhanhang855/html-maker';
+        const branch = document.getElementById('sync-branch-name').value.trim() || 'main';
+
+        syncStatusText.textContent = '正在连接节点并拉取 widgets.json...';
+        syncStatusText.style.color = '#0A84FF';
+
+        // 镜像 CDN 列表（解决 IPA 中 Raw GitHub 被拦截与 CORS 限制）
+        const candidateURLs = [
+          `https://cdn.jsdelivr.net/gh/${repo}@${branch}/widgets.json`,
+          `https://fastly.jsdelivr.net/gh/${repo}@${branch}/widgets.json`,
+          `https://cdn.staticaly.com/gh/${repo}/${branch}/widgets.json`,
+          `https://raw.githubusercontent.com/${repo}/${branch}/widgets.json`
+        ];
+
+        let success = false;
+        let fetchedData = null;
+
+        for (const url of candidateURLs) {
+          try {
+            const resp = await fetch(url + `?t=${Date.now()}`, { cache: 'no-cache' });
+            if (resp.ok) {
+              fetchedData = await resp.json();
+              if (Array.isArray(fetchedData) && fetchedData.length > 0) {
+                success = true;
+                break;
+              }
+            }
+          } catch (e) {
+            console.warn('节点拉取失败，尝试下一节点:', url);
+          }
         }
-        renderWidgetCatalog();
+
+        if (success && fetchedData) {
+          state.catalog = fetchedData;
+          renderCatalog();
+          syncStatusText.textContent = `同步成功！已载入 ${fetchedData.length} 个最新组件。`;
+          syncStatusText.style.color = '#30D158';
+          notify('GitHub 仓库同步成功');
+        } else {
+          syncStatusText.textContent = '无法从指定仓库拉取 widgets.json，已保留本地内置组件。请确认仓库已公开 (Public) 且包含 widgets.json。';
+          syncStatusText.style.color = '#FF453A';
+          notify('同步失败，请检查网络或仓库名');
+        }
       }
 
-      function renderWidgetCatalog() {
+      document.getElementById('btn-start-sync').addEventListener('click', executeSync);
+
+      function renderCatalog() {
         const list = document.getElementById('catalog-list');
         list.innerHTML = '';
         state.catalog.forEach(item => {
@@ -716,21 +775,20 @@
           card.addEventListener('click', () => {
             placeWidgetOnCanvas(item.html);
             closeDrawer('drawer-widgets', 'scrim-widgets');
-            notify(`Mounted: ${item.name}`);
+            notify(`已添加: ${item.name}`);
           });
           list.appendChild(card);
         });
       }
 
-      /* ----------------------------------------------------
-       * Canvas Manipulator & Gesture Tracker
-       * ---------------------------------------------------- */
+      /* 拖动与交互绑定 */
       function placeWidgetOnCanvas(htmlPayload) {
         const dummy = document.createElement('div');
         dummy.innerHTML = htmlPayload.trim();
         const widgetNode = dummy.firstElementChild;
         canvas.appendChild(widgetNode);
         registerInteractions(widgetNode);
+        bindAudioWidgetLogic(widgetNode);
         highlightNode(widgetNode);
       }
 
@@ -751,7 +809,7 @@
         if (state.activeNode) {
           state.activeNode.remove();
           highlightNode(null);
-          notify('Element removed');
+          notify('组件已移除');
         }
       });
 
@@ -761,27 +819,27 @@
 
       function registerInteractions(element) {
         let isMoving = false;
-        let pointerStartX = 0;
-        let pointerStartY = 0;
-        let originLeft = 0;
-        let originTop = 0;
+        let startX = 0, startY = 0;
+        let originLeft = 0, originTop = 0;
 
         element.addEventListener('pointerdown', (e) => {
+          // 如果点击的是输入框/滑块/按钮，不触发拖拽
+          if (['INPUT', 'BUTTON'].includes(e.target.tagName)) return;
           e.stopPropagation();
           highlightNode(element);
           isMoving = true;
           element.setPointerCapture(e.pointerId);
 
-          pointerStartX = e.clientX;
-          pointerStartY = e.clientY;
+          startX = e.clientX;
+          startY = e.clientY;
           originLeft = element.offsetLeft;
           originTop = element.offsetTop;
         });
 
         element.addEventListener('pointermove', (e) => {
           if (!isMoving) return;
-          const deltaX = e.clientX - pointerStartX;
-          const deltaY = e.clientY - pointerStartY;
+          const deltaX = e.clientX - startX;
+          const deltaY = e.clientY - startY;
           element.style.left = `${originLeft + deltaX}px`;
           element.style.top = `${originTop + deltaY}px`;
         });
@@ -797,40 +855,144 @@
         element.addEventListener('pointercancel', release);
       }
 
-      /* ----------------------------------------------------
-       * Standalone Bundling & Native Share Layer
-       * ---------------------------------------------------- */
+      /* 针对音乐播放器组件的即时逻辑绑定（解析 MP3/FLAC） */
+      function bindAudioWidgetLogic(root) {
+        const fileInput = root.querySelector('.player-file-input');
+        const audio = root.querySelector('.player-audio-core');
+        if (!fileInput || !audio) return;
+
+        const artWrap = root.querySelector('.player-art-wrap');
+        const ejectBtn = root.querySelector('.player-btn-eject');
+        const toggleBtn = root.querySelector('.player-btn-toggle');
+        const coverImg = root.querySelector('.player-cover-img');
+        const fallback = root.querySelector('.player-cover-fallback');
+        const titleEl = root.querySelector('.player-track-title');
+        const artistEl = root.querySelector('.player-track-artist');
+        const bar = root.querySelector('.player-progress-bar');
+        const curEl = root.querySelector('.player-cur-time');
+        const totalEl = root.querySelector('.player-total-time');
+
+        const trigger = () => fileInput.click();
+        if (artWrap) artWrap.addEventListener('click', trigger);
+        if (ejectBtn) ejectBtn.addEventListener('click', trigger);
+
+        fileInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          titleEl.textContent = file.name.replace(/\.[^/.]+$/, "");
+          artistEl.textContent = "未知歌手";
+          coverImg.style.display = 'none';
+          fallback.style.display = 'block';
+
+          audio.src = URL.createObjectURL(file);
+
+          try {
+            const buffer = await file.arrayBuffer();
+            const view = new DataView(buffer);
+
+            // ID3 (MP3) 标签解析
+            if (buffer.byteLength >= 10 && String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2)) === 'ID3') {
+              let offset = 10;
+              while (offset < view.byteLength - 10) {
+                const fid = String.fromCharCode(view.getUint8(offset), view.getUint8(offset + 1), view.getUint8(offset + 2), view.getUint8(offset + 3));
+                if (!/^[A-Z0-9]{4}$/.test(fid)) break;
+                const sz = (view.getUint8(offset + 4) << 21) | (view.getUint8(offset + 5) << 14) | (view.getUint8(offset + 6) << 7) | view.getUint8(offset + 7);
+                offset += 10;
+                if (offset + sz > view.byteLength) break;
+
+                if (fid === 'TIT2') {
+                  const b = new Uint8Array(view.buffer, view.byteOffset + offset + 1, sz - 1);
+                  titleEl.textContent = new TextDecoder('utf-8').decode(b).replace(/\0/g, '');
+                } else if (fid === 'TPE1') {
+                  const b = new Uint8Array(view.buffer, view.byteOffset + offset + 1, sz - 1);
+                  artistEl.textContent = new TextDecoder('utf-8').decode(b).replace(/\0/g, '');
+                } else if (fid === 'APIC') {
+                  let p = offset + 1;
+                  let mime = "";
+                  while (p < offset + sz && view.getUint8(p) !== 0) {
+                    mime += String.fromCharCode(view.getUint8(p));
+                    p++;
+                  }
+                  p += 2;
+                  while (p < offset + sz && view.getUint8(p) !== 0) p++;
+                  p++;
+                  const imgData = new Uint8Array(view.buffer, view.byteOffset + p, sz - (p - offset));
+                  coverImg.src = URL.createObjectURL(new Blob([imgData], { type: mime || 'image/jpeg' }));
+                  coverImg.style.display = 'block';
+                  fallback.style.display = 'none';
+                }
+                offset += sz;
+              }
+            }
+          } catch (_) {}
+
+          audio.play().catch(() => {});
+        });
+
+        toggleBtn.addEventListener('click', () => {
+          if (!audio.src) { trigger(); return; }
+          if (audio.paused) {
+            audio.play();
+            toggleBtn.textContent = '❚❚';
+          } else {
+            audio.pause();
+            toggleBtn.textContent = '▶';
+          }
+        });
+
+        audio.addEventListener('timeupdate', () => {
+          if (!audio.duration) return;
+          bar.value = (audio.currentTime / audio.duration) * 100;
+          const cm = Math.floor(audio.currentTime / 60);
+          const cs = Math.floor(audio.currentTime % 60);
+          curEl.textContent = `${cm}:${cs < 10 ? '0' : ''}${cs}`;
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+          const tm = Math.floor(audio.duration / 60);
+          const ts = Math.floor(audio.duration % 60);
+          totalEl.textContent = `${tm}:${ts < 10 ? '0' : ''}${ts}`;
+        });
+
+        bar.addEventListener('input', (e) => {
+          if (!audio.duration) return;
+          audio.currentTime = (e.target.value / 100) * audio.duration;
+        });
+      }
+
+      /* 导出完整 HTML 并唤起系统分享 */
       document.getElementById('action-export').addEventListener('click', async () => {
         highlightNode(null);
 
         const cleanCanvas = canvas.cloneNode(true);
-        cleanCanvas.querySelectorAll('.widget-drag-pill').forEach(pill => pill.remove());
+        cleanCanvas.querySelectorAll('.widget-drag-pill').forEach(p => p.remove());
         cleanCanvas.querySelectorAll('.canvas-widget').forEach(w => {
           w.classList.remove('selected');
           w.removeAttribute('data-widget-id');
           w.style.cursor = 'default';
         });
 
-        const backgroundStyle = state.isImage
+        const bgStyle = state.isImage
           ? `background-image: url('${state.background}'); background-size: cover; background-position: center;`
           : (state.background.includes('gradient')
             ? `background: ${state.background};`
             : `background-color: ${state.background};`);
 
-        const standaloneDocument = `<!DOCTYPE html>
-<html lang="en">
+        const standaloneDoc = `<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Crafted Experience</title>
+  <title>导出网页</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #viewport-root {
       width: 100%;
       height: 100%;
       position: relative;
-      ${backgroundStyle}
+      ${bgStyle}
       overflow: hidden;
     }
     .canvas-widget { position: absolute; }
@@ -843,41 +1005,39 @@
 </body>
 </html>`;
 
-        const filename = `crafted-page-${Date.now()}.html`;
-        const blob = new Blob([standaloneDocument], { type: 'text/html;charset=utf-8' });
+        const filename = `page-${Date.now()}.html`;
+        const blob = new Blob([standaloneDoc], { type: 'text/html;charset=utf-8' });
 
-        // iOS WKWebView Native Share Sheet (Zero Web Dialogs)
+        // iOS WKWebView 原生 Share Sheet 分享
         if (navigator.share) {
-          const htmlFile = new File([blob], filename, { type: 'text/html' });
-          if (navigator.canShare && navigator.canShare({ files: [htmlFile] })) {
+          const file = new File([blob], filename, { type: 'text/html' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
               await navigator.share({
-                title: 'Export HTML',
-                files: [htmlFile]
+                title: '分享制作的网页',
+                files: [file]
               });
-              notify('Share Sheet opened');
+              notify('已调起系统分享');
               return;
             } catch (err) {
-              if (err.name !== 'AbortError') notify('Share dismissed');
+              if (err.name !== 'AbortError') notify('分享取消或失败');
             }
           }
         }
 
-        // Direct stream download fallback
-        const downloadUrl = URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = downloadUrl;
-        anchor.download = filename;
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
-        URL.revokeObjectURL(downloadUrl);
-        notify('Export file ready');
+        // 备用下载
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        notify('文件已导出下载');
       });
 
-      // Bootstrap
+      // 初始化
       applyBackground();
-      syncWidgetRepository();
+      renderCatalog();
     })();
   </script>
 </body>
